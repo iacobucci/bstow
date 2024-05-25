@@ -1,0 +1,44 @@
+#!/bin/bash
+
+SOURCE="$1"
+TARGET="$2"
+
+IGNOREGIT=true
+FILTER=false
+
+mkdir -p "$TARGET"
+
+function ignoregit {
+	if $IGNOREGIT; then
+		grep -Ev '\.git(/|$)'
+	else
+		cat
+	fi
+}
+
+if ls "$SOURCE/.stow-local-ignore" &> /dev/null; then
+	FILTER=false
+fi
+
+
+find -L "$SOURCE" | ignoregit | 
+    while read -r f; do 
+
+		if [[ $FILTER == true ]]; then
+			if [[ $f == "$SOURCE/.stow-local-ignore" ]]; then
+				continue
+			fi
+			if grep -q "$SOURCE/.stow-local-ignore" "$d"; then
+				continue
+			fi
+		fi
+
+		if [ -d "$f" ]; then
+			mkdir -p "$TARGET/${f/$SOURCE//}"
+		fi
+
+		if [ -f "$f" ]; then
+			ln -snf "$(realpath "$f")" "$TARGET/${f/$SOURCE//}"
+			
+		fi
+	done
