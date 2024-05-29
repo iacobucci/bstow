@@ -17,28 +17,32 @@ function ignoregit {
 }
 
 if ls "$SOURCE/.stow-local-ignore" &> /dev/null; then
-	FILTER=false
+	FILTER=true
 fi
 
 
 find -L "$SOURCE" | ignoregit | 
     while read -r f; do 
+		NAME=${f/$SOURCE//}
 
 		if [[ $FILTER == true ]]; then
 			if [[ $f == "$SOURCE/.stow-local-ignore" ]]; then
 				continue
 			fi
-			if grep -q "$SOURCE/.stow-local-ignore" "$d"; then
+
+			NAME="$(sed -e 's/^\/.//' <<< $NAME)"
+			if [[ -n $(awk -v input="$NAME" 'index(input, $0) == 1' "$SOURCE/.stow-local-ignore") ]] ; then
+				echo "ignoring $f"
 				continue
 			fi
 		fi
 
 		if [ -d "$f" ]; then
-			mkdir -p "$TARGET/${f/$SOURCE//}"
+			mkdir -p "$TARGET/$NAME"
 		fi
 
+
 		if [ -f "$f" ]; then
-			ln -snf "$(realpath "$f")" "$TARGET/${f/$SOURCE//}"
-			
+			ln -snf "$(realpath "$f")" "$TARGET/$NAME"
 		fi
 	done

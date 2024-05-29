@@ -4,6 +4,8 @@ A _bash_ stow is a _bogged down_ stow, but for my very personal use cases its a 
 
 For now this script only lets you create a symlink farm with `bstow <source> <target>` where _source_ and _target_ are directories that will behave like so
 
+cane
+
 | source                                        | target                                            |
 | --------------------------------------------- | ------------------------------------------------- |
 | is where you keep your files                  | is where the files are linked to                  |
