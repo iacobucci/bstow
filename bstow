@@ -6,10 +6,11 @@ TARGET="$2"
 IGNOREGIT=true
 FILTER=false
 
+TARGET="${TARGET/#\~/$HOME}"
 mkdir -p "$TARGET"
 
 function ignoregit {
-	if $IGNOREGIT; then
+	if [[ $IGNOREGIT == true ]]; then
 		grep -Ev '\.git(/|$)'
 	else
 		cat
@@ -22,7 +23,7 @@ fi
 
 
 find -L "$SOURCE" | ignoregit | 
-    while read -r f; do 
+	while read -r f; do 
 		NAME=${f/$SOURCE//}
 
 		if [[ $FILTER == true ]]; then
@@ -40,7 +41,6 @@ find -L "$SOURCE" | ignoregit |
 		if [ -d "$f" ]; then
 			mkdir -p "$TARGET/$NAME"
 		fi
-
 
 		if [ -f "$f" ]; then
 			ln -snf "$(realpath "$f")" "$TARGET/$NAME"
